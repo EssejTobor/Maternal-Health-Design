@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Maternal Journey in Colors</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0e6d2;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #4a2c2a;
+            text-align: center;
+        }
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .color-option {
+            height: 100px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .color-option:hover {
+            transform: scale(1.05);
+        }
+        #question, #explanation {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #nextButton {
+            display: block;
+            width: 200px;
+            padding: 10px;
+            margin: 20px auto;
+            background-color: #8c6f6f;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #nextButton:hover {
+            background-color: #6b4f4f;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Your Maternal Journey in Colors</h1>
+        <p>Colors can express our emotions and experiences. Let's explore your maternal journey through colors.</p>
+        <div id="question"></div>
+        <div class="color-grid" id="colorGrid"></div>
+        <div id="explanation"></div>
+        <button id="nextButton" style="display: none;">Next</button>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                text: "Choose a color that represents how you feel about your maternal journey right now:",
+                colors: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FDCB6E', '#6C5CE7', '#55E6C1'],
+                followUp: "Why did you choose this color? What does it represent for you?"
+            },
+            {
+                text: "Select a color that embodies the support you wish you had:",
+                colors: ['#26de81', '#fd9644', '#2bcbba', '#FC427B', '#BDC581', '#182C61'],
+                followUp: "What kind of support does this color represent to you?"
+            },
+            {
+                text: "Pick a color that reflects your hopes for your child's future:",
+                colors: ['#D6A2E8', '#82589F', '#3498db', '#2ecc71', '#f1c40f', '#e74c3c'],
+                followUp: "How does this color relate to your hopes and dreams for your child?"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let userResponses = {};
+
+        function renderQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('question').innerText = question.text;
+            const colorGrid = document.getElementById('colorGrid');
+            colorGrid.innerHTML = '';
+            question.colors.forEach((color, index) => {
+                const colorDiv = document.createElement('div');
+                colorDiv.className = 'color-option';
+                colorDiv.style.backgroundColor = color;
+                colorDiv.onclick = () => selectColor(color);
+                colorGrid.appendChild(colorDiv);
+            });
+            document.getElementById('explanation').innerHTML = '';
+            document.getElementById('nextButton').style.display = 'none';
+        }
+
+        function selectColor(color) {
+            userResponses[currentQuestion] = { color: color };
+            document.getElementById('explanation').innerHTML = `
+                <p>${questions[currentQuestion].followUp}</p>
+                <textarea id="colorExplanation"></textarea>
+            `;
+            document.getElementById('nextButton').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            const explanation = document.getElementById('colorExplanation').value;
+            userResponses[currentQuestion].explanation = explanation;
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                renderQuestion();
+            } else {
+                showSummary();
+            }
+        }
+
+        function showSummary() {
+            let summary = '<h2>Thank you for sharing your journey with us!</h2>';
+            questions.forEach((question, index) => {
+                const response = userResponses[index];
+                summary += `
+                    <div style="margin-top: 20px; padding: 10px; background-color: ${response.color}; color: white;">
+                        <p><strong>${question.text}</strong></p>
+                        <p>${response.explanation}</p>
+                    </div>
+                `;
+            });
+            summary += '<p>Your responses will help us better understand and support Black maternal mental health.</p>';
+            document.querySelector('.container').innerHTML = summary;
+        }
+
+        document.getElementById('nextButton').addEventListener('click', nextQuestion);
+
+        renderQuestion();
+    </script>
+</body>
+</html>
